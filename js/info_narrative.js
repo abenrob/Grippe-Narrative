@@ -166,10 +166,13 @@ function generateBarChart(id,datain){
         .attr("class","barregion")
         .text(function(d,i){ return d['region']; });                
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+    if (!compact){
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+    }
+    
 }
 
 function generateMap(id){

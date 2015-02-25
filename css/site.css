@@ -29,6 +29,12 @@
 #timeline{
     width:100%;
 }
+.subtitle {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  font-style: italic;
+  color: darkgrey
+}
 
 /*#barchart {
   display: none;
