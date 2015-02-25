@@ -2,6 +2,17 @@
     margin: 10px 0px 60px 0px;
 }
 
+.para h4 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: #d73027;
+}
+
+.paraDate {
+  font-style: italic;
+  color: darkgrey;
+}
+
 #endbuffer{
     height:700px;
 }

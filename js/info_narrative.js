@@ -1,9 +1,10 @@
 
 function generateParagraphs(id,data){
     data.forEach(function(d,i) {
-    $(id).append('<div id="para' + i + '" class="col-md-12 para"><h3>'
-            + d['headline'] + '</h3>'
-            + d['narrative'] + '</div>');
+    $(id).append('<div id="para' + i + '" class="col-md-12 para">'+
+            '<span class="paraDate">' + d['year']+', semaine '+d['week']+'</span>'+
+            '<h4>' + d['headline'] + '</h4>' +
+            d['narrative'] + '</div>');
     });
     $(id).append('<div id="endbuffer"></div>');
 }
@@ -75,7 +76,9 @@ function generateTimeline(id,data){
         .attr("fill","#999999")
         .on("click",function(){
             if(compact){
-                showParagraph(parseInt($(this).attr('pos')),42);
+                showParagraph(parseInt($(this).attr('pos')),data.length);
+                updateinfographic(parseInt($(this).attr('pos')));
+            } else {
                 updateinfographic(parseInt($(this).attr('pos')));
             }
         });
@@ -424,15 +427,15 @@ window.onresize = function(){
 };
 
 $('#Next').on("click",function(){
-    if(currentpara<42){
-        showParagraph(currentpara+1,42);
+    if(currentpara<data.length){
+        showParagraph(currentpara+1,data.length);
         updateinfographic(currentpara+1);
     }
 });
 
 $('#Previous').on("click",function(){
     if(currentpara>0){
-        showParagraph(currentpara-1,42);
+        showParagraph(currentpara-1,data.length);
         updateinfographic(currentpara-1);
     }
 });
