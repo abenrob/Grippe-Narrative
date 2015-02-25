@@ -2,79 +2,59 @@
 function generateParagraphs(id,data){
     data.forEach(function(d,i) {
     $(id).append('<div id="para' + i + '" class="col-md-12 para"><h3>'
-            + d['date'] + '</h3>'
-            + d['text'] + '</div>');
+            + d['headline'] + '</h3>'
+            + d['narrative'] + '</div>');
     });
     $(id).append('<div id="endbuffer"></div>');
 }
     
 function generateTimeline(id,data){
-    var width = $(id).width()-10;
-    var height = 70;
+    infowidth = $(id).width()-10;
+    var height = 50;
     var svg = d3.select("#timeline")
             .append("svg")
-            .attr("width", width)
+            .attr("width", infowidth)
             .attr("height", height)
             .append("g")
             .attr("transform", "translate(" + 10 + ",0)");
-    
-    var format = d3.time.format("%d/%m/%Y");
-    
-    
-    console.log (format.parse(data[0]['date']));
-    console.log (format.parse(data[41]['date']));    
-    var scale = d3.time.scale()
-            .range([0, width-50])    
-            .domain([format.parse(data[0]['date']),
-                    format.parse(data[41]['date'])]);
-
-                 
-    var months = [
-        {"date":"01/02/14","Month":"Feb"},
-        {"date":"01/03/14","Month":"Mar"},
-        {"date":"01/04/14","Month":"Apr"},
-        {"date":"01/05/14","Month":"May"},
-        {"date":"01/06/14","Month":"Jun"},
-        {"date":"01/07/14","Month":"Jul"},
-        {"date":"01/08/14","Month":"Aug"},
-        {"date":"01/09/14","Month":"Sep"},
-        {"date":"01/10/14","Month":"Oct"}];
+      
+    var scale = d3.scale.linear()
+            .range([0, infowidth-50])    
+            .domain([1,data.length])
         
     svg.selectAll("g1")
-        .data(months)
+        .data(data)
         .enter()
         .append("text")
-        .attr("x", function(d) {
-            return scale(format.parse(d['date']));
+        .attr("x", function(d,i) {
+            return scale(i+1)-7; // scoot it over to center text
         })
-        .attr("y", 50)
+        .attr("y", 45)
         .attr("dy", ".35em")
         .attr("class","barlabel")
         .text(function(d,i) {
-                return d['Month'];
+                return d['week'] < 10 ? '0'+d['week'] : ''+d['week'];
         });
             
-     svg.selectAll("g1")
-         .data(months)
-         .enter()
-         .append("line")
-         .attr("x1", function(d) {
-              return scale(format.parse(d['date']));
-         })
-         .attr("y1", 30)
-         .attr("x2", function(d) {
-              return scale(format.parse(d['date']));
-         })
-            .attr("y2", 40)
-            .attr("stroke-width", 1)
-            .attr("stroke", "black");                 
-
-
+    svg.selectAll("g1")
+        .data(data)
+        .enter()
+        .append("line")
+        .attr("x1", function(d,i) {
+          return scale(i+1);
+        })
+        .attr("y1", 30)
+        .attr("x2", function(d,i) {
+          return scale(i+1);
+        })
+        .attr("y2", 38)
+        .attr("stroke-width", 1)
+        .attr("stroke", "black");                 
 
     svg.append("line")
         .attr("x1", 5)
         .attr("y1", 30)
-        .attr("x2", width-50)
+        .attr("x2", infowidth-50)
         .attr("y2", 30)
         .attr("stroke-width", 2)
         .attr("stroke", "black");           
@@ -83,8 +63,8 @@ function generateTimeline(id,data){
         .data(data)
         .enter()
         .append("circle")
-        .attr("cx", function(d) {
-             return scale(format.parse(d['date']));
+        .attr("cx", function(d,i) {
+             return scale(i+1);
         })
         .attr("cy", function(d) {
              return 30;
@@ -105,10 +85,10 @@ function generateTimeline(id,data){
         .attr("cy", function(d) {
              return 30;
         })
-        .attr("r", 10)
+        .attr("r", 8)
         .attr("id","selectedcircle")
         .attr("opacity","0.5")
-        .attr("fill","#4682B4");
+        .attr("fill","#d73027");
         
     
         
@@ -116,9 +96,7 @@ function generateTimeline(id,data){
         .data(data)
         .enter()
         .append("text")
-        .attr("x", function(d) {
-             return scale(format.parse(d['date']));
-        })
+        .attr("x", 0)
         .attr("y", 10)
         .attr("dy", ".35em")
         .attr("id",function(d,i){
@@ -126,24 +104,27 @@ function generateTimeline(id,data){
         })
         .attr("class","barlabel hidden")
         .text(function(d,i) {
-                return d['date'];
+                return d['year']+', semaine '+d['week'];
         });
          
 }
 
 function generateBarChart(id,datain){
     
-    var data = new Array();
-    datain["DeathsandCases"].forEach(function(d) {
-        data=data.concat([d['Deaths'],d['Cases']]);
-    });
-    var margin = {top: 20, right: 30, bottom: 20, left: 130},
+    var data;
+    var s = datain['counts'].sort(function(a,b){
+        return d3.descending(a.cases,b.cases);
+    })
+    console.log(s);
+    data = s.slice(0,10);
+
+    var margin = {top: 10, right: 30, bottom: 20, left: 135},
     width = $(id).width() - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;    
     var barHeight = (height)/data.length-10;   
 
     var x = d3.scale.linear()
-        .domain([0,5000])
+        .domain([0,2500])
         .range([0, width]);
 
     var svg  = d3.select(id)
@@ -163,51 +144,24 @@ function generateBarChart(id,datain){
         .orient("bottom");
 
     bar.append("rect")
-        .attr("width", x)
+        .attr("width", function(d) { return x(d['cases']); })
         .attr("height", barHeight)
-        .attr("class",function(d,i) { if(i%2===0){return "deaths";}
-                    else {
-                        return "cases";
-                    }
-                });
+        .attr("class","cases");
 
     bar.append("text")
-        .attr("x", function(d) { return x(d); })
+        .attr("x", function(d) { return x(d['cases'])+3; })
         .attr("y", barHeight / 2)
         .attr("dy", ".35em")
         .attr("class","barlabel")
-        .text(function(d) { return d; });
+        .text(function(d) { return d['cases']; });
 
-    bar.append("text")
-        .attr("x", -40)
-        .attr("y", 2)
-        .attr("dy", ".45em")
-        .attr("class","smallfont")
-        .text(function(d,i) { if(i%2===0){return "Deaths";}
-                    else {
-                        return "Cases";
-                    }
-                }
-         );
                 
     bar.append("text")
-        .attr("x", -130)
+        .attr("x", -135)
         .attr("y", 0)
-        .attr("dy", ".55em")
-        .text(function(d,i){
-            if(i===0){
-                return "Guinea";
-            }
-            if(i===2){
-                return "Liberia";
-            }
-            if(i===4){
-                return "Sierra Leone";
-            }
-            if(i===6){
-                return "Nigeria";
-            }
-        });                
+        .attr("dy", ".58em")
+        .attr("class","barregion")
+        .text(function(d,i){ return d['region']; });                
 
     svg.append("g")
         .attr("class", "x axis")
@@ -219,7 +173,7 @@ function generateMap(id){
     var margin = {top: 10, right: 10, bottom: 10, left: 10},
     width = $(id).width() - margin.left - margin.right,
     height = 300;
-    if(width<400){sc=500;center=[37, 0 ];fs="8px";shift=20;} else {sc=950;center=[13, 0 ];fs="14px";shift=0;}
+    if(width<400){sc=900;center=[24, 43];} else {sc=1200;center=[15, 43.1];}
     var projection = d3.geo.mercator()
         .center(center)
         .scale(sc);
@@ -234,115 +188,65 @@ function generateMap(id){
     var g = svg.append("g");
     
     g.selectAll("path")
-      .data(westafrica.features)
+      .data(fr_regions.features)
           .enter()
           .append("path")
           .attr("d", path)
-          .attr("id",function(d,i){return d.properties.NAME_REF.split(' ').join('_');})
-          .attr("class",function(d,i){return d.properties.CLASS;})
-          .attr("fill",function(d,i){
-              if(d.properties.CLASS==="Country"){
-                  if(d.properties.NAME_REF==="Sierra Leone"
-                  || d.properties.NAME_REF==="Liberia" 
-                  || d.properties.NAME_REF==="Guinea" 
-                  || d.properties.NAME_REF==="Nigeria" 
-                          ){
-                      return "transparent";
-                  } else {
-                      return "#BBBBBB";
-                  }
-              }
-              return "#FFFFFF";
-          });        
-          
-    g.selectAll('text')
-      .data(westafrica.features)
-         .enter()
-         .append("text")
-         .attr("x", function(d,i){
-                     if(d.properties.NAME_REF==="Guinea"){return path.centroid(d)[0]-80+shift;}
-                     if(d.properties.NAME_REF==="Sierra Leone"){return path.centroid(d)[0]-70+shift;}
-                     if(d.properties.NAME_REF==="Liberia"){return path.centroid(d)[0]-60+shift;}
-                     return path.centroid(d)[0]-30+shift;})
-         .attr("y", function(d,i){
-                     if(d.properties.NAME_REF==="Sierra Leone"){return path.centroid(d)[1]+10;}
-                     if(d.properties.NAME_REF==="Liberia"){return path.centroid(d)[1]+10;} 
-                     return path.centroid(d)[1];})
-         .attr("dy", ".55em")
-         .attr("class","maplabel")
-         .style("font-size",fs)
-         .text(function(d,i){if(d.properties.NAME_REF==="Sierra Leone"
-                  || d.properties.NAME_REF==="Liberia" 
-                  || d.properties.NAME_REF==="Guinea" 
-                  || d.properties.NAME_REF==="Nigeria" 
-                          ){
-                      return d.properties.NAME_REF;
-                  } else {
-                      return "";
-                  }});
+          .attr("id",function(d,i){return d.properties.ADM1_NAME;})
+          .attr("class","region")
+          .attr("fill","transparent");        
 }
 
-function highlighttimeline(id,num){
+function highlighttimeline(id,num){ 
     
-    var width = $(id).width()-10;
-    var height = 100;
-
-    var format = d3.time.format("%d/%m/%Y");    
-    
-    var scale = d3.time.scale()
-            .range([0, width-50])
-            .domain([format.parse(data[0]['date']),
-                     format.parse(data[41]['date'])]);    
+    var scale = d3.scale.linear()
+            .range([0, infowidth-50])    
+            .domain([1,data.length]) 
        
     d3.select('#selectedcircle')
         .transition()
-        .attr("cx", function() {
-             return scale(format.parse(data[num]['date']));
-        });
+        .attr("cx", function(d,i) {
+             return scale(num+1);
+        })
         
 }
 
 function highlightmap(num){
-    var d = data[num].RegionDeaths;
+    var d = data[num].counts;
     d.forEach(function(element){
-               d3.select("#"+element.Region.split(' ').join('_')).transition().attr("fill",numtohex(element.Deaths,2100)); 
-            });
+       d3.select("#"+element.region).transition().attr("fill",numtohex(element.cases,2100))
+    });
 }
 
 function numtohex(num,limit){
     var color;
-    if(num==0){
-        color="#ffffff";
+
+    if(num<25){
+        color="#1a9850";
     }
     else if(num<50){
-        color="#fde0dc";
+        color="#66bd63";
     }
-    else if(num<150){
-        color="#f9bdbb";
+    else if(num<80){
+        color="#a6d96a";
+    }
+    else if(num<120){
+        color="#d9ef8b";
+    }
+    else if(num<170){
+        color="#ffffbf";
     }
     else if(num<250){
-        color="#f69988";
+        color="#fee08b";
     }
-    else if(num<400){
-        color="#f36c60";
-    }
-    else if(num<460){
-        color="#e84e40";
+    else if(num<350){
+        color="#fdae61";
     }
     else if(num<500){
-        color="#e51c23";
+        color="#f46d43";
     }
-    else if(num<550){
-        color="#dd191d";
-    }
-    else if(num<600){
-        color="#d01716";
-    }
-    else if(num<850){
-        color="#c41411";
-    }
-    else if(num<2100){
-        color="#b0120a";
+    else if(num>=500){
+        color="#d73027";
     }
     return color;
 
@@ -390,12 +294,14 @@ function showParagraph(id,numparas){
 ///////////////////////////////////////
 
 function updateinfographic(temppara){
+    var match = data.filter(function(d,i) { return i == temppara; })[0];
+
     if(currentpara!==temppara){
         highlighttimeline('#timeline',temppara);
         d3.select('#timelinedate'+currentpara).classed('hidden', true);
         d3.select('#timelinedate'+temppara).classed('hidden', false);
         $('#timelinedate'+temppara).removeClass('hidden');
-        $('#barcharttitle').html('Confirmed Deaths and Cases - ' + data[temppara].date);
+        $('#barcharttitle').html('Cas confirmés par 100 000 personnes (' + match.year+', semaine '+match.week+')');
         if(!compact){
             $('#para'+currentpara).removeClass('highlightedpara');
             $('#para'+temppara).addClass('highlightedpara');
@@ -408,32 +314,39 @@ function updateinfographic(temppara){
 }
 
 function transitionBarChart(id,datain){
-    var data = new Array();
-    datain["DeathsandCases"].forEach(function(d) {
-        data=data.concat([d['Deaths'],d['Cases']]);
-    });
-    var margin = {top: 20, right: 30, bottom: 20, left: 130},
+    var data;
+    var s = datain['counts'].sort(function(a,b){
+        return d3.descending(a.cases,b.cases);
+    })
+    data = s.slice(0,10);
+
+    var margin = {top: 10, right: 30, bottom: 20, left: 135},
     width = $(id).width() - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;    
-    var barHeight = (height)/data.length-10;
-    
+    var barHeight = (height)/data.length-10;   
+
     var x = d3.scale.linear()
-        .domain([0,5000])
+        .domain([0,2500])
         .range([0, width]);
 
     d3.select(id).selectAll("rect")
         .data(data).transition()
         .duration(1000)
-        .attr("width", x)
+        .attr("width", function(d) { return x(d['cases']); })
         .attr("height", barHeight);
 
     d3.select(id).selectAll(".barlabel")
         .data(data).transition()
         .duration(1000)
-        .attr("x", function(d) { return x(d)+5; })
+        .attr("x", function(d) { return x(d['cases'])+5; })
         .attr("y", barHeight / 2)
         .attr("dy", ".35em")
-        .text(function(d) { return d; });
+        .text(function(d) { return d['cases']; });
+
+    d3.select(id).selectAll(".barregion")
+        .data(data).transition()
+        .duration(1000)
+        .text(function(d,i){ return d['region']; }); 
 }
 
 /////////////////////////////////////////
@@ -479,6 +392,7 @@ function resizedw(){
 var compact = false;
 var currentwidth=$(window).width();
 var currentpara = -1;
+var infowidth;
 
 if($(window).width()<768){compact = true;}            
 generateParagraphs('#text',data);
@@ -492,12 +406,12 @@ updateinfographic(0);
 $(window).scroll(function(){
     if(!compact){
         stickydiv();
-        updateinfographic(getParagraphInView(42,220));
+        updateinfographic(getParagraphInView(data.length,150));
     }
 });
 
 if(compact){    
-    showParagraph(0,42);
+    showParagraph(0,data.length);
 } else {
     $('#browse').hide();
 };
