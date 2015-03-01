@@ -49,15 +49,15 @@ function generateTimeline(id,data){
           return scale(i+1);
         })
         .attr("y2", 38)
-        .attr("stroke-width", 1)
+        .attr("stroke-width", .5)
         .attr("stroke", "black");                 
 
     svg.append("line")
-        .attr("x1", 5)
+        .attr("x1", 0)
         .attr("y1", 30)
         .attr("x2", infowidth-50)
         .attr("y2", 30)
-        .attr("stroke-width", 2)
+        .attr("stroke-width", .5)
         .attr("stroke", "black");           
     
     svg.selectAll("circle")
@@ -121,7 +121,7 @@ function generateBarChart(id,datain){
     console.log(s);
     data = s.slice(0,10);
 
-    var margin = {top: 10, right: 30, bottom: 20, left: 135},
+    var margin = {top: 10, right: 30, bottom: 20, left: 130},
     width = $(id).width() - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;    
     var barHeight = (height)/data.length-10;   
@@ -160,7 +160,7 @@ function generateBarChart(id,datain){
 
                 
     bar.append("text")
-        .attr("x", -135)
+        .attr("x", -130)
         .attr("y", 0)
         .attr("dy", ".58em")
         .attr("class","barregion")
