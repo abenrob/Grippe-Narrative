@@ -99,7 +99,7 @@ function generateTimeline(id,data){
         .data(data)
         .enter()
         .append("text")
-        .attr("x", 0)
+        .attr("x", -7)
         .attr("y", 10)
         .attr("dy", ".35em")
         .attr("id",function(d,i){
