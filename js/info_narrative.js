@@ -10,53 +10,54 @@ function generateParagraphs(id,data){
 }
     
 function generateTimeline(id,data){
-    infowidth = $(id).width()-10;
-    var height = 50;
+    tl_margin = {top: 20, right: 10, bottom: 20, left: 10};
+    tl_width = 50;
+    tl_height = $(window).height()-tl_margin.top-tl_margin.bottom;
     var svg = d3.select("#timeline")
             .append("svg")
-            .attr("width", infowidth)
-            .attr("height", height)
+            .attr("width", tl_width)
+            .attr("height", tl_height+tl_margin.top+tl_margin.bottom)
             .append("g")
-            .attr("transform", "translate(" + 10 + ",0)");
+            //.attr("transform", "translate(" + 10 + ",0)");
       
     var scale = d3.scale.linear()
-            .range([0, infowidth-50])    
+            .range([tl_margin.top, tl_height])    
             .domain([1,data.length])
         
     svg.selectAll("g1")
         .data(data)
         .enter()
         .append("text")
-        .attr("x", function(d,i) {
-            return scale(i+1)-7; // scoot it over to center text
+        .attr("y", function(d,i) {
+            return scale(i+1)+3; // scoot it over to center text
         })
-        .attr("y", 45)
-        .attr("dy", ".35em")
+        .attr("x", 25)
+        .attr("dx", ".35em")
         .attr("class","barlabel")
         .text(function(d,i) {
-                return d['week'] < 10 ? '0'+d['week'] : ''+d['week'];
+                return d['week'] < 10 ? 's0'+d['week'] : 's'+d['week'];
         });
             
-    svg.selectAll("g1")
-        .data(data)
-        .enter()
-        .append("line")
-        .attr("x1", function(d,i) {
-          return scale(i+1);
-        })
-        .attr("y1", 30)
-        .attr("x2", function(d,i) {
-          return scale(i+1);
-        })
-        .attr("y2", 38)
-        .attr("stroke-width", .5)
-        .attr("stroke", "black");                 
+    // svg.selectAll("g1")
+    //     .data(data)
+    //     .enter()
+    //     .append("line")
+    //     .attr("y1", function(d,i) {
+    //       return scale(i+1);
+    //     })
+    //     .attr("x1", 30)
+    //     .attr("y2", function(d,i) {
+    //       return scale(i+1);
+    //     })
+    //     .attr("x2", 38)
+    //     .attr("stroke-width", .5)
+    //     .attr("stroke", "black");                 
 
     svg.append("line")
-        .attr("x1", 0)
-        .attr("y1", 30)
-        .attr("x2", infowidth-50)
-        .attr("y2", 30)
+        .attr("y1", tl_margin.top)
+        .attr("x1", 20)
+        .attr("y2", tl_height)
+        .attr("x2", 20)
         .attr("stroke-width", .5)
         .attr("stroke", "black");           
     
@@ -64,11 +65,11 @@ function generateTimeline(id,data){
         .data(data)
         .enter()
         .append("circle")
-        .attr("cx", function(d,i) {
+        .attr("cy", function(d,i) {
              return scale(i+1);
         })
-        .attr("cy", function(d) {
-             return 30;
+        .attr("cx", function(d) {
+             return 20;
         })
         .attr("r", 3.5)
         .attr("id",function(d,i){return "time_"+i;})
@@ -84,31 +85,33 @@ function generateTimeline(id,data){
         });
         
     svg.append("circle")
-        .attr("cx", 0)
-        .attr("cy", function(d) {
-             return 30;
+        .attr("cy", tl_margin.top)
+        .attr("cx", function(d) {
+             return 20;
         })
         .attr("r", 8)
         .attr("id","selectedcircle")
-        .attr("opacity","0.5")
-        .attr("fill","#d73027");
+        .attr("stroke-width", .5 )
+        .attr("stroke", "rgb(50,160,160)") 
+        .attr("fill-opacity","0.3")
+        .attr("fill","rgb(50,160,160)");
         
     
         
-    svg.selectAll("g2")
-        .data(data)
-        .enter()
-        .append("text")
-        .attr("x", -7)
-        .attr("y", 10)
-        .attr("dy", ".35em")
-        .attr("id",function(d,i){
-            return "timelinedate"+i;
-        })
-        .attr("class","barlabel hidden")
-        .text(function(d,i) {
-                return d['year']+', semaine '+d['week'];
-        });
+    // svg.selectAll("g2")
+    //     .data(data)
+    //     .enter()
+    //     .append("text")
+    //     .attr("y", 7)
+    //     .attr("x", 10)
+    //     .attr("dx", ".35em")
+    //     .attr("id",function(d,i){
+    //         return "timelinedate"+i;
+    //     })
+    //     .attr("class","barlabel hidden")
+    //     .text(function(d,i) {
+    //             return d['year']+', semaine '+d['week'];
+    //     });
          
 }
 
@@ -117,8 +120,8 @@ function generateBarChart(id,datain){
     var data;
     var s = datain['counts'].sort(function(a,b){
         return d3.descending(a.cases,b.cases);
-    })
-    console.log(s);
+    });
+
     data = s.slice(0,10);
 
     var margin = {top: 10, right: 30, bottom: 20, left: 130},
@@ -206,12 +209,12 @@ function generateMap(id){
 function highlighttimeline(id,num){ 
     
     var scale = d3.scale.linear()
-            .range([0, infowidth-50])    
+            .range([tl_margin.top, tl_height])    
             .domain([1,data.length]) 
        
     d3.select('#selectedcircle')
         .transition()
-        .attr("cx", function(d,i) {
+        .attr("cy", function(d,i) {
              return scale(num+1);
         })
         
@@ -398,7 +401,7 @@ function resizedw(){
 var compact = false;
 var currentwidth=$(window).width();
 var currentpara = -1;
-var infowidth;
+var tl_width, tl_height,tl_margin;
 
 if($(window).width()<768){compact = true;}            
 generateParagraphs('#text',data);
