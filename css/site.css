@@ -1,15 +1,37 @@
-@import url(http://fonts.googleapis.com/css?family=Josefin+Slab:300,700,300italic);
-
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,700,300italic);
+@import url(http://fonts.googleapis.com/css?family=Titillium+Web:300);
 body {
-  font-family: 'Josefin Slab', serif;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 300;
+  font-size: 62.5%;
+  background-color: rgb(230,230,230);
 }
 
+h1 {font-size:3em}  /* displayed at 24px */
+h2 {font-size:1.5em}  /* displayed at 18px */
+h3 {font-size:1.25em}  /* displayed at 15px */
+h4 {font-size:1em}  /* displayed at 12px */
+
 h1, h2, h3, h4, h5 {
-  font-family: 'Josefin Slab', serif;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 700;
 }
 
+.header {
+  height: 65px;
+  border-top: 10px solid rgb(50,160,160);
+}
+.header h1 {
+  font-family: 'Titillium Web', sans-serif;
+  color: rgb(50,160,160);
+  margin-top: 15px;
+  text-align: center;
+}
+.viz-content {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+}
 .para{
     margin: 10px 0px 60px 0px;
 }
@@ -41,7 +63,21 @@ h1, h2, h3, h4, h5 {
 }
 
 #timeline{
-  width:100%;
+  position: absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  width:50px;
+}
+#map {
+  position: absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  width:430px;
+  height:580px;
+  border: 10px solid white;
+  background-color: lightgrey;
 }
 .subtitle {
   margin-top: 0px;
@@ -55,13 +91,13 @@ h1, h2, h3, h4, h5 {
 }*/
 
 svg text {
-  font-family: 'Josefin Slab', serif;
+  font-family: 'Open Sans', serif;
   font-weight: 400;
   font-size:10px;
 }
 
 .smallfont{
-  font-family: 'Josefin Slab', serif;
+  font-family: 'Open Sans', serif;
   font-weight: 300;
   font-size:10px;
 }

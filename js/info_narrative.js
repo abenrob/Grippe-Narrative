@@ -12,7 +12,7 @@ function generateParagraphs(id,data){
 function generateTimeline(id,data){
     tl_margin = {top: 20, right: 10, bottom: 20, left: 10};
     tl_width = 50;
-    tl_height = $(window).height()-tl_margin.top-tl_margin.bottom;
+    tl_height = $(window).height()-tl_margin.top-tl_margin.bottom-header_height;
     var svg = d3.select("#timeline")
             .append("svg")
             .attr("width", tl_width)
@@ -36,22 +36,7 @@ function generateTimeline(id,data){
         .attr("class","barlabel")
         .text(function(d,i) {
                 return d['week'] < 10 ? 's0'+d['week'] : 's'+d['week'];
-        });
-            
-    // svg.selectAll("g1")
-    //     .data(data)
-    //     .enter()
-    //     .append("line")
-    //     .attr("y1", function(d,i) {
-    //       return scale(i+1);
-    //     })
-    //     .attr("x1", 30)
-    //     .attr("y2", function(d,i) {
-    //       return scale(i+1);
-    //     })
-    //     .attr("x2", 38)
-    //     .attr("stroke-width", .5)
-    //     .attr("stroke", "black");                 
+        });              
 
     svg.append("line")
         .attr("y1", tl_margin.top)
@@ -94,25 +79,7 @@ function generateTimeline(id,data){
         .attr("stroke-width", .5 )
         .attr("stroke", "rgb(50,160,160)") 
         .attr("fill-opacity","0.3")
-        .attr("fill","rgb(50,160,160)");
-        
-    
-        
-    // svg.selectAll("g2")
-    //     .data(data)
-    //     .enter()
-    //     .append("text")
-    //     .attr("y", 7)
-    //     .attr("x", 10)
-    //     .attr("dx", ".35em")
-    //     .attr("id",function(d,i){
-    //         return "timelinedate"+i;
-    //     })
-    //     .attr("class","barlabel hidden")
-    //     .text(function(d,i) {
-    //             return d['year']+', semaine '+d['week'];
-    //     });
-         
+        .attr("fill","rgb(50,160,160)");         
 }
 
 function generateBarChart(id,datain){
@@ -179,17 +146,17 @@ function generateBarChart(id,datain){
 }
 
 function generateMap(id){
-    var margin = {top: 10, right: 10, bottom: 10, left: 10},
+    var margin = {top: 10, right: 0, bottom: 10, left: 0},
     width = $(id).width() - margin.left - margin.right,
-    height = 300;
-    if(width<400){sc=900;center=[24, 43];} else {sc=1200;center=[15, 43.1];}
+    height = $(id).height() - margin.top - margin.bottom, sc=1500, center=[12.5, 47.6];
     var projection = d3.geo.mercator()
         .center(center)
         .scale(sc);
-
+        
     var svg = d3.select(id).append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .attr("transform", function(d) { return "translate(10,10)";});
 
     var path = d3.geo.path()
         .projection(projection);
@@ -402,6 +369,7 @@ var compact = false;
 var currentwidth=$(window).width();
 var currentpara = -1;
 var tl_width, tl_height,tl_margin;
+var header_height = 75;
 
 if($(window).width()<768){compact = true;}            
 generateParagraphs('#text',data);
