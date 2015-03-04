@@ -4,12 +4,13 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
   font-size: 62.5%;
+  color: rgb(100,100,100);
   background-color: rgb(230,230,230);
 }
 
-h1 {font-size:3em}  /* displayed at 24px */
-h2 {font-size:1.5em}  /* displayed at 18px */
-h3 {font-size:1.25em}  /* displayed at 15px */
+h1 {font-size:3.25em}  /* displayed at 24px */
+h2 {font-size:2em}  /* displayed at 18px */
+h3 {font-size:1.5em}  /* displayed at 15px */
 h4 {font-size:1em}  /* displayed at 12px */
 
 h1, h2, h3, h4, h5 {
@@ -20,35 +21,88 @@ h1, h2, h3, h4, h5 {
 .header {
   height: 65px;
   border-top: 10px solid rgb(50,160,160);
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  background-color: rgb(230,230,230);
+  z-index: 2000;
 }
 .header h1 {
   font-family: 'Titillium Web', sans-serif;
+  font-weight: 300;
   color: rgb(50,160,160);
   margin-top: 15px;
   text-align: center;
 }
-.viz-content {
+.head-spacer {
+  height: 75px;
+  width:100%;
+}
+.charts {
+  margin-top: 75px;
   position: relative;
   max-width: 960px;
   margin: 0 auto;
+  z-index: 2000;
+  position: fixed;
+  top:75px;
+  left:0;
+  right:0;
+  bottom:0;
 }
-.para{
-    margin: 10px 0px 60px 0px;
+.viz-content {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto 400px auto;
+  z-index: 1000;
 }
-
-.para h4 {
-  font-weight: 700;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  color: #d73027;
+#timeline{
+  position: absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  width:50px;
 }
-
-.paraDate {
+.tl_circle {
+  fill: rgb(100,100,100);
+}
+.tl_line {
+  stroke: rgb(100,100,100);
+}
+#map {
+  position: absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  width:430px;
+  height:580px;
+  border: 10px solid white;
+  background-color: lightgray;
+}
+.scrolling-center {
+  margin-left: 50px;
+  margin-right: 450px;
+  overflow-y:auto;
+}
+.narrative-content {
+  margin: 0 20px 40px 20px;
+}
+.narrative-content h3 {
+  text-transform: uppercase;
+  margin: 5px 0 8px;
+}
+.narrative-content p {
+  font-size: 1.25em;
+  line-height: 1.5em;
+  margin-bottom: 10px;
+}
+.narative-date {
+  font-size: 1.25em;
   font-weight: 300;
   font-style: italic;
-  color: darkgrey;
+  color: rgb(150,150,150);
 }
-
 #endbuffer{
   height:700px;
 }
@@ -62,23 +116,6 @@ h1, h2, h3, h4, h5 {
   display:none;
 }
 
-#timeline{
-  position: absolute;
-  top:0;
-  left:0;
-  bottom:0;
-  width:50px;
-}
-#map {
-  position: absolute;
-  top:0;
-  right:0;
-  bottom:0;
-  width:430px;
-  height:580px;
-  border: 10px solid white;
-  background-color: lightgrey;
-}
 .subtitle {
   margin-top: 0px;
   margin-bottom: 5px;
@@ -86,40 +123,18 @@ h1, h2, h3, h4, h5 {
   color: darkgrey
 }
 
-/*#barchart {
-  display: none;
-}*/
-
 svg text {
   font-family: 'Open Sans', serif;
   font-weight: 400;
   font-size:10px;
+  color: rgb(100,100,100);
 }
 
 .smallfont{
   font-family: 'Open Sans', serif;
   font-weight: 300;
   font-size:10px;
-}
-
-.cases {
-  fill: #d73027;
-}
-
-.deaths {
-  fill: red;
-}
-
-.axis text {
-  /*font-size: 10px;*/
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-  stroke-width: .5;
+  color: rgb(100,100,100);
 }
 
 .barlabel,.barregion{
