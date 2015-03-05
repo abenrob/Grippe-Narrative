@@ -187,42 +187,47 @@ function generateTimeline(id,data){
 }
 
 function generateMap(id){
-    var margin = {top: 10, right: 0, bottom: 10, left: 10};
-    var viz_cont = d3.select(".viz-content")[0][0];
-    var center_cont = d3.select(".scrolling-center")[0][0];
-    var avail_width = viz_cont.clientWidth - center_cont.offsetLeft - center_cont.clientWidth;
-    var width = avail_width - margin.left - margin.right;
-    var height = $(window).height()-margin.top-margin.bottom-header_height;
-    
-    d3.select("#map")
-        .style("height",height-20+"px");
-
-    var projection = fitProjection( 
-        d3.geo.mercator(), 
-        fr_regions, 
-        [[0,0],[width-10,height-10]],
-        true
-    ); 
+    d3.json("data/france_regions.geojson", function(error, fr) {
+        if (error) return console.error(error);
+        console.log(fr);    
+        var margin = {top: 10, right: 0, bottom: 10, left: 10};
+        var viz_cont = d3.select(".viz-content")[0][0];
+        var center_cont = d3.select(".scrolling-center")[0][0];
+        var avail_width = viz_cont.clientWidth - center_cont.offsetLeft - center_cont.clientWidth;
+        var width = avail_width - margin.left - margin.right;
+        var height = $(window).height()-margin.top-margin.bottom-header_height;
         
-    var svg = d3.select(id).append("svg")
-        .attr("width", width)
-        .attr("height", height);
+        d3.select("#map")
+            .style("height",height-20+"px");
 
-    var path = d3.geo.path()
-        .projection(projection);
+        var projection = fitProjection( 
+            d3.geo.mercator(), 
+            fr, 
+            [[10,10],[width-10,height-10]],
+            true
+        ); 
+            
+        var svg = d3.select(id).append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-    var g = svg.append("g");
-    
-    g.selectAll("path")
-        .data(fr_regions.features)
-        .enter()
-        .append("path")
-        .attr("d", path)
-        .attr("id",function(d,i){return d.properties.ADM1_NAME;})
-        .attr("class","region")
-        .attr("fill","transparent")
-        .on("mouseover",mapHoverOn)
-        .on("mouseout",mapHoverOff);   
+        var path = d3.geo.path()
+            .projection(projection);
+
+        var g = svg.append("g");
+        
+        g.selectAll("path")
+            .data(fr.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("id",function(d,i){return d.properties.ADM1_NAME;})
+            .attr("class","region")
+            .attr("fill","transparent")
+            .on("mouseover",mapHoverOn)
+            .on("mouseout",mapHoverOff);   
+        highlightmap(0);
+    });
 }
 
 function mapHoverOn(d) {
@@ -260,8 +265,12 @@ function highlightmap(num){
 
 
 // functions for paragraph scroll
-$(window).scroll(function(){
-    updateinfographic(getParagraphInView(data.length,125));
+var doit
+$(window).scroll(function (){
+    if (doit){clearTimeout(doit)} else {var doit};
+    doit = setTimeout(function(){
+        updateinfographic(getParagraphInView(data.length,125));
+    }, 100);
 });    
             
 function getParagraphInView(numparas,mar){
