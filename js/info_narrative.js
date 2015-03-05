@@ -2,15 +2,15 @@
 function generateParagraphs(id,data){
     var narrative = d3.select(".viz-content").append("div").attr("class","scrolling-center");
     var scroll_div = d3.select(".scrolling-center")[0][0];
-    var ch_margin = {top: 10, right: 30, bottom: 20, left: 130};
+    var ch_margin = {top: 10, right: 30, bottom: 20, left: 165};
     var narrwidth = scroll_div.clientWidth-20;
     var chartwidth = narrwidth - ch_margin.left - ch_margin.right;
-    var chartheight = data[0].counts.length*20 - ch_margin.top - ch_margin.bottom;
+    var chartheight = data[0].counts.length*22 - ch_margin.top - ch_margin.bottom;
     
     var x = d3.scale.linear()
         .domain([0,2500])
         .range([0, chartwidth]);
-    var barHeight = 10;
+    var barHeight = 12;
 
     var week = narrative.selectAll("div")
         .data(data)
@@ -25,6 +25,9 @@ function generateParagraphs(id,data){
         .text(function(d){
             return d.year+', semaine '+d.week;
         })
+        .attr("id", function(d,i){
+            return "date_"+i;
+        })
         .attr("class","narative-date");
 
     var week_header = week.append("h3")
@@ -38,7 +41,7 @@ function generateParagraphs(id,data){
         });
 
     var svg = week.append("svg")
-        .attr("width", narrwidth)
+        .attr("width", narrwidth-15)
         .attr("height", chartheight)
         .append("g")
         .attr("transform", "translate(" + ch_margin.left + "," + ch_margin.top + ")");
@@ -48,28 +51,29 @@ function generateParagraphs(id,data){
             var s = d.counts.sort(function(a,b){
                 return d3.descending(a.cases,b.cases);
             });
-
-            var top10 = s.slice(0,10);
-            //return top10; 
             return s;
         })
         .enter()
         .append("g")
-        .attr("transform", function(d, i) { return "translate(0," + i * (barHeight+10) + ")"; });
+        .attr("class",function(d){ return 'g_'+d.region })
+        .classed("barrow",true)
+        .attr("transform", function(d, i) { return "translate(0," + i * (barHeight+8) + ")"; })
+        .on("mouseover",barHoverOn)
+        .on("mouseout",barHoverOff);  
 
     bar.append("rect")
         .attr("width", function(d) { ;return x(d.cases); })
         .attr("height", barHeight)
-        .attr("class","cases")
+        .classed("cases",true)
         .attr("fill",function(d){
             return numtohex(d.cases);
         });
 
     bar.append("text")
         .attr("x", function(d) { return x(d.cases)+3; })
-        .attr("y", barHeight / 2)
-        .attr("dy", ".35em")
-        .attr("class","barlabel")
+        .attr("y", 0)
+        .attr("dy", ".8em")
+        .classed("barlabel",true)
         .text(function(d) { return d.cases; });
 
                 
@@ -78,14 +82,29 @@ function generateParagraphs(id,data){
         .attr("x", -5)
         .attr("y", 0)
         .attr("dy", ".8em")
-        .attr("class","barregion")
+        .classed("barregion",true)
         .text(function(d,i){ return d.region; });  
 
+    // make each one at least full-height
+    d3.selectAll(".narrative-content")
+        .style("min-height",d3.select((document.documentElement).clientHeight-75-40)+"px");
 }
     
+function barHoverOn(d) {
+    d3.selectAll(".barhover").classed("barhover", false);
+    d3.select(this).classed("barhover", true);
+    d3.selectAll(".maphover").classed("maphover", false);
+    d3.selectAll("#"+d.region).classed("maphover", true);
+}
+
+function barHoverOff(d) {
+  d3.selectAll(".maphover").classed("maphover", false);
+  d3.selectAll(".barhover").classed("barhover", false);
+}
+
 function generateTimeline(id,data){
 
-    tl_margin = {top: 10, right: 10, bottom: 30, left: 10};
+    tl_margin = {top: 5, right: 10, bottom: 30, left: 10};
     tl_width = 50;
     tl_height = $(window).height()-tl_margin.top-tl_margin.bottom-header_height;
     var svg = d3.select("#timeline")
@@ -133,6 +152,21 @@ function generateTimeline(id,data){
         .attr("r", 3.5)
         .attr("id",function(d,i){return "time_"+i;})
         .attr("class","tl_circle")
+        .attr("pos",function(d,i){return i;});
+
+    svg.selectAll("trigger_circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cy", function(d,i) {
+             return scale(i+1)+tl_margin.top;
+        })
+        .attr("cx", function(d) {
+             return 20;
+        })
+        .attr("r", 8)
+        .attr("id",function(d,i){return "time_"+i;})
+        .attr("class","tl_trigger_circle")
         .attr("pos",function(d,i){return i;})
         .on("click",function(e){
             //updateinfographic(e.pos);
@@ -153,17 +187,26 @@ function generateTimeline(id,data){
 }
 
 function generateMap(id){
-    var margin = {top: 10, right: 0, bottom: 10, left: 0},
-    width = $(id).width() - margin.left - margin.right,
-    height = $(id).height() - margin.top - margin.bottom, sc=1500, center=[12.5, 47.6];
-    var projection = d3.geo.mercator()
-        .center(center)
-        .scale(sc);
+    var margin = {top: 10, right: 0, bottom: 10, left: 10};
+    var viz_cont = d3.select(".viz-content")[0][0];
+    var center_cont = d3.select(".scrolling-center")[0][0];
+    var avail_width = viz_cont.clientWidth - center_cont.offsetLeft - center_cont.clientWidth;
+    var width = avail_width - margin.left - margin.right;
+    var height = $(window).height()-margin.top-margin.bottom-header_height;
+    
+    d3.select("#map")
+        .style("height",height-20+"px");
+
+    var projection = fitProjection( 
+        d3.geo.mercator(), 
+        fr_regions, 
+        [[0,0],[width-10,height-10]],
+        true
+    ); 
         
     var svg = d3.select(id).append("svg")
         .attr("width", width)
-        .attr("height", height)
-        .attr("transform", function(d) { return "translate(10,10)";});
+        .attr("height", height);
 
     var path = d3.geo.path()
         .projection(projection);
@@ -177,7 +220,21 @@ function generateMap(id){
         .attr("d", path)
         .attr("id",function(d,i){return d.properties.ADM1_NAME;})
         .attr("class","region")
-        .attr("fill","transparent");        
+        .attr("fill","transparent")
+        .on("mouseover",mapHoverOn)
+        .on("mouseout",mapHoverOff);   
+}
+
+function mapHoverOn(d) {
+    d3.selectAll(".maphover").classed("maphover", false);
+    d3.select(this).classed("maphover", true);
+    d3.selectAll(".barhover").classed("barhover", false);
+    d3.selectAll(".g_"+d.properties.ADM1_NAME).classed("barhover", true);
+}
+
+function mapHoverOff(d) {
+  d3.selectAll(".maphover").classed("maphover", false);
+  d3.selectAll(".barhover").classed("barhover", false);
 }
 
 function highlighttimeline(id,num){ 
@@ -201,57 +258,6 @@ function highlightmap(num){
     });
 }
 
-function numtohex(num){
-    var color;
-
-    if(num<25){
-        color="#1a9850";
-    }
-    else if(num<50){
-        color="#66bd63";
-    }
-    else if(num<80){
-        color="#a6d96a";
-    }
-    else if(num<120){
-        color="#d9ef8b";
-    }
-    else if(num<170){
-        color="#ffffbf";
-    }
-    else if(num<250){
-        color="#fee08b";
-    }
-    else if(num<350){
-        color="#fdae61";
-    }
-    else if(num<500){
-        color="#f46d43";
-    }
-    else if(num>=500){
-        color="#d73027";
-    }
-    return color;
-
-}
-
-// Tween stuff for scroll to funcitons
-
-function doScroll(wkNum){
-    var elScroll = d3.select("#narr_"+wkNum)[0][0].offsetTop;
-    d3.transition()
-        .delay(200)
-        .duration(1500)
-        .tween("scroll", scrollTween(elScroll));
-};
-
-function scrollTween(scrollTop) {
-  return function() {
-    var i = d3.interpolateNumber(window.pageYOffset || document.documentElement.scrollTop, scrollTop);
-    return function(t) { scrollTo(0, i(t)) };
- };
-}
-   
 
 // functions for paragraph scroll
 $(window).scroll(function(){
@@ -273,25 +279,24 @@ function getParagraphInView(numparas,mar){
 
 
 // Transition infogrpahic functions
-
 function updateinfographic(temppara){
     if(currentpara!==temppara){
         highlighttimeline('#timeline',temppara);
         highlightmap(temppara);
+        d3.selectAll('.narative-date').classed('current',false);
+        d3.select('#date_'+temppara).classed('current',true);
         currentpara=temppara;
     }
 }
 function updatenarrative(temppara){
     if(currentpara!==temppara){
-        doScroll(temppara);
+        doScroll("#narr_"+temppara);
         //currentpara=temppara;
     }
 }
 
 
-
 // initialization
-
 var currentpara = -1;
 var tl_width, tl_height,tl_margin;
 var header_height = 75;
@@ -300,6 +305,4 @@ generateParagraphs('#text',data);
 generateTimeline('#timeline',data);
 generateMap('#map');
 updateinfographic(0);
-
-
 

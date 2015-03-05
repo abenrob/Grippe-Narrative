@@ -1,5 +1,6 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,700,300italic);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,600,700,300italic);
 @import url(http://fonts.googleapis.com/css?family=Titillium+Web:300);
+
 body {
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
@@ -28,6 +29,7 @@ h1, h2, h3, h4, h5 {
   background-color: rgb(230,230,230);
   z-index: 2000;
 }
+
 .header h1 {
   font-family: 'Titillium Web', sans-serif;
   font-weight: 300;
@@ -35,28 +37,32 @@ h1, h2, h3, h4, h5 {
   margin-top: 15px;
   text-align: center;
 }
+
 .head-spacer {
   height: 75px;
   width:100%;
 }
+
+.main-content {
+  width: 960px;
+}
+
 .charts {
-  margin-top: 75px;
-  position: relative;
-  max-width: 960px;
   margin: 0 auto;
   z-index: 2000;
   position: fixed;
   top:75px;
   left:0;
   right:0;
-  bottom:0;
 }
+
 .viz-content {
   position: relative;
   max-width: 960px;
   margin: 0 auto 400px auto;
   z-index: 1000;
 }
+
 #timeline{
   position: absolute;
   top:0;
@@ -64,56 +70,66 @@ h1, h2, h3, h4, h5 {
   bottom:0;
   width:50px;
 }
+
 .tl_circle {
   fill: rgb(100,100,100);
 }
+
+.tl_trigger_circle {
+  fill-opacity: 0;
+  cursor: pointer;
+}
+
 .tl_line {
   stroke: rgb(100,100,100);
 }
+
 #map {
   position: absolute;
   top:0;
   right:0;
   bottom:0;
-  width:430px;
-  height:580px;
   border: 10px solid white;
   background-color: lightgray;
 }
+
 .scrolling-center {
   margin-left: 50px;
   margin-right: 450px;
-  overflow-y:auto;
 }
+
 .narrative-content {
   margin: 0 20px 40px 20px;
+  z-index: 3000;
 }
+
 .narrative-content h3 {
   text-transform: uppercase;
   margin: 5px 0 8px;
 }
+
 .narrative-content p {
   font-size: 1.25em;
   line-height: 1.5em;
   margin-bottom: 10px;
 }
+
 .narative-date {
   font-size: 1.25em;
   font-weight: 300;
   font-style: italic;
   color: rgb(150,150,150);
 }
+
+.narative-date.current {
+  font-size: 1.35em;
+  font-weight: 600;
+  font-style: normal;
+  color: rgb(50,160,160);
+}
+
 #endbuffer{
   height:700px;
-}
-
-.sticky {
-  position: fixed;
-  top: 0px;
-}
-
-.hidden{
-  display:none;
 }
 
 .subtitle {
@@ -126,7 +142,7 @@ h1, h2, h3, h4, h5 {
 svg text {
   font-family: 'Open Sans', serif;
   font-weight: 400;
-  font-size:10px;
+  font-size:12px;
   color: rgb(100,100,100);
 }
 
@@ -137,8 +153,20 @@ svg text {
   color: rgb(100,100,100);
 }
 
+.barrow {
+  cursor:default;
+}
+
 .barlabel,.barregion{
   /*font: 10px sans-serif;*/
+}
+
+.barhover rect {
+  fill: rgb(50,160,160);
+}
+
+.barhover text {
+  font-weight: 600;
 }
 
 .highlightedpara{
@@ -151,3 +179,7 @@ svg text {
   stroke: grey;
   stroke-width: .5px;
 }
+.region.maphover {
+  fill: rgb(50,160,160);
+}
+
