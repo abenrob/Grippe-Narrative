@@ -188,8 +188,7 @@ function generateTimeline(id,data){
 
 function generateMap(id){
     d3.json("data/france_regions.geojson", function(error, fr) {
-        if (error) return console.error(error);
-        console.log(fr);    
+        if (error) return console.error(error); 
         var margin = {top: 10, right: 0, bottom: 10, left: 10};
         var viz_cont = d3.select(".viz-content")[0][0];
         var center_cont = d3.select(".scrolling-center")[0][0];
@@ -227,6 +226,8 @@ function generateMap(id){
             .on("mouseover",mapHoverOn)
             .on("mouseout",mapHoverOff);   
         highlightmap(0);
+
+        d3.select('#map').attr('class','map-container');
     });
 }
 

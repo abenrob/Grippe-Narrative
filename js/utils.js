@@ -112,3 +112,43 @@ function fitProjection(projection, data, box, center) {
     }
     return projection.scale(scale).translate([transX, transY])
 };
+
+// info
+function setInfo(){
+    var target = d3.select(".info")[0][0];
+    var margin = 14;
+    var stroke_w = 3;
+    var r = (target.clientWidth-(margin*2)-stroke_w*2)/2;
+
+    var svg = d3.select(".info").append("svg")
+        .attr("width", target.clientWidth)
+        .attr("height", target.clientHeight);
+    var elem = svg.append("g")
+        .attr("transform", function(d){return "translate("+target.clientWidth/2+","+target.clientHeight/2+")"})
+        .on("click",function(e){
+            d3.select(".info-blocker")
+                .classed('hidden',false);
+        });
+    var circle = elem.append("circle")
+        .attr("r", r)
+        .attr("class","info-circle")
+        .attr("stroke-width",stroke_w);
+    var text = elem.append("text")
+        .text(function(d){return "i"})
+        .attr("class","info-i")
+        .style("font-size",26)
+        .attr("dy",10)
+        .style("text-anchor", "middle")
+
+    d3.select('.info-exit')
+        .on("click",function(e){
+            d3.select(".info-blocker")
+                .classed('hidden',true);
+        });
+}
+function getInfo(){
+    var narrative = d3.select(".viz-content").append("div").attr("class","scrolling-center");
+};
+
+
+setInfo();

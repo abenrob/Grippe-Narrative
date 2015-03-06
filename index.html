@@ -13,6 +13,7 @@
     <body>
         <div class="header">
             <h1>Grippe en France 2014-2015</h1>
+            <div class="info"></div>
         </div>
         <div class="head-spacer"></div>
         <div class="charts main-content">
@@ -20,6 +21,15 @@
             <div id="map"></div>  
         </div>  
         <div class="viz-content main-content"></div> 
+        <div class="info-blocker hidden">
+            <div class="info-content">
+                <h2>Sources des données</h2>
+                <p>Réseau Sentinelles <a href="http://websenti.u707.jussieu.fr/sentiweb/?page=database">base de données</a> et <a href="http://websenti.u707.jussieu.fr/sentiweb/?page=bulletin"> bulletins</a></p>
+                <h2>Merci à Simon Johnson</h2>
+                <p>dont le projet <a href="https://github.com/SimonbJohnson/Ebola-Narrative/">Ebola-Narrative</a> a inspiré cette visualisation</p>
+            </div>
+            <div class="info-exit">X</div>
+        </div>
         <!-- load scripts -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="http://d3js.org/d3.v3.min.js"></script>
