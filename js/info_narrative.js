@@ -122,7 +122,7 @@ function generateTimeline(id,data){
         .enter()
         .append("text")
         .attr("y", function(d,i) {
-            return scale(i+1)+3+tl_margin.top; // scoot it over to center text
+            return scale(i+1)+3+tl_margin.top;
         })
         .attr("x", 25)
         .attr("dx", ".35em")
@@ -169,7 +169,6 @@ function generateTimeline(id,data){
         .attr("class","tl_trigger_circle")
         .attr("pos",function(d,i){return i;})
         .on("click",function(e){
-            //updateinfographic(e.pos);
             updatenarrative(e.pos);
         });
         
@@ -224,7 +223,8 @@ function generateMap(id){
             .attr("class","region")
             .attr("fill","transparent")
             .on("mouseover",mapHoverOn)
-            .on("mouseout",mapHoverOff);   
+            .on("mouseout",mapHoverOff); 
+
         highlightmap(0);
 
         d3.select('#map').attr('class','map-container');
@@ -243,8 +243,7 @@ function mapHoverOff(d) {
   d3.selectAll(".barhover").classed("barhover", false);
 }
 
-function highlighttimeline(id,num){ 
-    
+function highlighttimeline(id,num){    
     var scale = d3.scale.linear()
             .range([tl_margin.top, tl_height])    
             .domain([1,data.length]) 
@@ -264,15 +263,21 @@ function highlightmap(num){
     });
 }
 
+function updateinfographic(temppara){
+    if(currentpara!==temppara){
+        highlighttimeline('#timeline',temppara);
+        highlightmap(temppara);
+        d3.selectAll('.narative-date').classed('current',false);
+        d3.select('#date_'+temppara).classed('current',true);
+        currentpara=temppara;
+    }
+}
 
-// functions for paragraph scroll
-var doit
-$(window).scroll(function (){
-    if (doit){clearTimeout(doit)} else {var doit};
-    doit = setTimeout(function(){
-        updateinfographic(getParagraphInView(data.length,125));
-    }, 100);
-});    
+function updatenarrative(temppara){
+    if(currentpara!==temppara){
+        doScroll("#narr_"+temppara);
+    }
+}
             
 function getParagraphInView(numparas,mar){
     var parainview=0;
@@ -287,24 +292,14 @@ function getParagraphInView(numparas,mar){
     return parainview;
 }
 
-
-// Transition infogrpahic functions
-function updateinfographic(temppara){
-    if(currentpara!==temppara){
-        highlighttimeline('#timeline',temppara);
-        highlightmap(temppara);
-        d3.selectAll('.narative-date').classed('current',false);
-        d3.select('#date_'+temppara).classed('current',true);
-        currentpara=temppara;
-    }
-}
-function updatenarrative(temppara){
-    if(currentpara!==temppara){
-        doScroll("#narr_"+temppara);
-        //currentpara=temppara;
-    }
-}
-
+// functions for paragraph scroll
+var doit
+$(window).scroll(function (){
+    if (doit){clearTimeout(doit)} else {var doit};
+    doit = setTimeout(function(){
+        updateinfographic(getParagraphInView(data.length,125));
+    }, 100);
+});    
 
 // initialization
 var currentpara = -1;

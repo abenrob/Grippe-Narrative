@@ -48,7 +48,6 @@ function numtohex(num){
         color="#d73027";
     }
     return color;
-
 }   
 
 
